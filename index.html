@@ -14,6 +14,7 @@
 :root{--g:#00ff9d;--g2:#00d97e;--g3:#0b8f57;--bg:#020806;--card:rgba(6,26,18,.72);--line:rgba(0,255,157,.18);--txt:#d8ffe9;--mut:#7fae95}
 html{scroll-behavior:smooth}
 body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden;line-height:1.6;cursor:none}
+body.locked{overflow:hidden}
 body::before{content:'';position:fixed;inset:0;z-index:-2;background:radial-gradient(circle at 15% 8%,rgba(0,255,157,.16),transparent 45%),radial-gradient(circle at 85% 85%,rgba(0,255,157,.10),transparent 45%),var(--bg)}
 body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(rgba(0,255,157,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,157,.05) 1px,transparent 1px);background-size:48px 48px;-webkit-mask-image:radial-gradient(circle at 50% 25%,#000 0%,transparent 78%);mask-image:radial-gradient(circle at 50% 25%,#000 0%,transparent 78%)}
 #fx{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.55}
@@ -24,6 +25,8 @@ body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 ::-webkit-scrollbar-track{background:#04120c}
 ::-webkit-scrollbar-thumb{background:linear-gradient(var(--g),var(--g3));border-radius:10px}
 .wrap{width:min(1180px,92%);margin:0 auto}
+
+/* ============ KEYFRAMES ============ */
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes spinRev{to{transform:rotate(-360deg)}}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
@@ -36,15 +39,54 @@ body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 @keyframes orbit1{from{transform:translate(-50%,-50%) rotate(0deg) translateX(172px) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg) translateX(172px) rotate(-360deg)}}
 @keyframes orbit2{from{transform:translate(-50%,-50%) rotate(0deg) translateX(148px) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(-360deg) translateX(148px) rotate(360deg)}}
 @keyframes orbit3{from{transform:translate(-50%,-50%) rotate(0deg) translateX(120px) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg) translateX(120px) rotate(-360deg)}}
+@keyframes startFlash{0%{opacity:0}30%{opacity:1}100%{opacity:0}}
+@keyframes startPulse{0%,100%{transform:scale(1);box-shadow:0 0 40px rgba(0,255,157,.5),0 0 80px rgba(0,255,157,.3)}50%{transform:scale(1.04);box-shadow:0 0 70px rgba(0,255,157,.9),0 0 140px rgba(0,255,157,.5)}}
+@keyframes arrowBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes gridMove{from{background-position:0 0}to{background-position:48px 48px}}
+@keyframes glitch{0%,100%{transform:translate(0)}20%{transform:translate(-2px,2px)}40%{transform:translate(-2px,-2px)}60%{transform:translate(2px,2px)}80%{transform:translate(2px,-2px)}}
 
 #scrollProg{position:fixed;top:0;left:0;height:3px;width:0;z-index:9998;background:linear-gradient(90deg,var(--g3),var(--g));box-shadow:0 0 12px var(--g);transition:width .1s}
-#cursor,#cursorDot{position:fixed;pointer-events:none;z-index:9997;border-radius:50%;transform:translate(-50%,-50%);transition:opacity .3s}
+#cursor,#cursorDot{position:fixed;pointer-events:none;z-index:99997;border-radius:50%;transform:translate(-50%,-50%);transition:opacity .3s}
 #cursor{width:32px;height:32px;border:1.5px solid rgba(0,255,157,.7);box-shadow:0 0 18px rgba(0,255,157,.5);transition:width .2s,height .2s,background .2s,transform .12s ease-out}
 #cursor.hover{width:52px;height:52px;background:rgba(0,255,157,.1);border-color:var(--g)}
 #cursorDot{width:5px;height:5px;background:var(--g);box-shadow:0 0 12px var(--g)}
 @media(pointer:coarse){body{cursor:auto}#cursor,#cursorDot{display:none}}
 
-#loader{position:fixed;inset:0;z-index:9999;background:#020806;display:grid;place-items:center;transition:opacity .6s,visibility .6s}
+/* ============ START SCREEN ============ */
+#startScreen{position:fixed;inset:0;z-index:99999;background:radial-gradient(circle at 50% 50%,#04261a 0%,#020806 60%);display:grid;place-items:center;overflow:hidden;transition:opacity .9s cubic-bezier(.7,0,.3,1),visibility .9s}
+#startScreen::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,255,157,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,157,.06) 1px,transparent 1px);background-size:48px 48px;animation:gridMove 12s linear infinite;pointer-events:none;-webkit-mask-image:radial-gradient(circle at 50% 50%,#000 30%,transparent 80%);mask-image:radial-gradient(circle at 50% 50%,#000 30%,transparent 80%)}
+#startScreen::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--g),transparent);animation:startFlash 3s ease-in-out infinite;pointer-events:none}
+#startScreen.hide{opacity:0;visibility:hidden;transform:scale(1.15)}
+#startScreen.hide .start-content{transform:scale(.85);opacity:0}
+.start-flash{position:fixed;inset:0;background:radial-gradient(circle,#eafff5,#00ff9d,transparent 70%);z-index:99998;pointer-events:none;opacity:0}
+.start-flash.go{animation:startFlash .9s ease-out}
+.start-content{position:relative;z-index:2;text-align:center;padding:30px;transition:transform .9s cubic-bezier(.7,0,.3,1),opacity .5s;max-width:700px}
+.start-logo-wrap{position:relative;width:280px;height:280px;margin:0 auto 30px;display:grid;place-items:center}
+.start-ring{position:absolute;border-radius:50%;pointer-events:none}
+.start-ring.r1{inset:0;border:1px dashed rgba(0,255,157,.4);animation:spin 14s linear infinite}
+.start-ring.r2{inset:22px;border:1.5px solid rgba(0,255,157,.55);animation:spinRev 10s linear infinite}
+.start-ring.r3{inset:44px;border:2px dotted rgba(0,255,157,.7);animation:spin 7s linear infinite}
+.start-dot{position:absolute;top:50%;left:50%;width:10px;height:10px;border-radius:50%;background:var(--g);box-shadow:0 0 20px var(--g),0 0 40px var(--g);animation:orbit1 4s linear infinite}
+.start-dot.d2{animation:orbit2 6s linear infinite;width:7px;height:7px;background:#7dffe0}
+.start-logo{position:relative;z-index:2;width:150px;height:150px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,rgba(0,255,157,.35),transparent 72%);border:2px solid rgba(0,255,157,.6);animation:auraPulse 2.6s ease-in-out infinite}
+.start-logo::before{content:'';position:absolute;inset:-16px;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 20%,rgba(0,255,157,.9) 32%,transparent 42% 62%,rgba(0,255,157,.75) 75%,transparent 88% 100%);animation:spin 3s linear infinite;filter:blur(12px);z-index:-1}
+.start-logo img{width:75%;height:75%;object-fit:contain;filter:drop-shadow(0 0 24px rgba(0,255,157,1)) drop-shadow(0 0 48px rgba(0,255,157,.7));animation:float 3.4s ease-in-out infinite}
+.start-title{font-family:'Orbitron';font-weight:900;font-size:clamp(1.6rem,5.5vw,3rem);letter-spacing:.06em;text-transform:uppercase;background:linear-gradient(90deg,#0d5a3a,#00ff9d,#eafff5,#00ff9d,#0d5a3a);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 4s linear infinite;filter:drop-shadow(0 0 22px rgba(0,255,157,.5));margin-bottom:8px}
+.start-sub{font-family:'Orbitron';font-size:11px;letter-spacing:.5em;color:var(--mut);text-transform:uppercase;margin-bottom:30px}
+.start-hint{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--g);letter-spacing:.14em;text-transform:uppercase;margin-bottom:24px;opacity:.85;animation:blink 2s ease-in-out infinite}
+.start-btn{position:relative;background:transparent;border:none;padding:0;cursor:pointer;display:inline-block}
+.start-btn-inner{position:relative;padding:22px 62px;border-radius:16px;background:linear-gradient(135deg,rgba(0,255,157,.22),rgba(0,255,157,.06));border:2px solid var(--g);font-family:'Orbitron';font-weight:900;font-size:clamp(1rem,3vw,1.4rem);letter-spacing:.3em;text-transform:uppercase;color:var(--g);text-shadow:0 0 20px rgba(0,255,157,.9);animation:startPulse 2.4s ease-in-out infinite;transition:.3s;overflow:hidden;display:inline-flex;align-items:center;gap:14px}
+.start-btn-inner::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,255,157,.4),transparent);animation:shine 3s linear infinite}
+.start-btn-inner::after{content:'';position:absolute;inset:-6px;border-radius:20px;background:conic-gradient(from 0deg,transparent 0 60%,rgba(0,255,157,.6) 80%,transparent 100%);animation:spin 3s linear infinite;filter:blur(8px);z-index:-1}
+.start-btn:hover .start-btn-inner{transform:scale(1.05);color:#eafff5;border-color:#eafff5;box-shadow:0 0 60px rgba(0,255,157,1)}
+.start-arrow{display:inline-block;animation:arrowBounce 1.2s ease-in-out infinite;font-size:1.2em}
+.start-footer{position:absolute;bottom:24px;left:0;right:0;text-align:center;font-family:'Orbitron';font-size:10px;letter-spacing:.3em;color:var(--mut);text-transform:uppercase;z-index:2;opacity:.6}
+.start-stats{display:flex;gap:26px;justify-content:center;margin-top:32px;flex-wrap:wrap;opacity:.8}
+.start-stats div{font-family:'Orbitron';font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
+.start-stats b{display:block;color:var(--g);font-size:1.35rem;font-weight:900;margin-bottom:3px;text-shadow:0 0 14px rgba(0,255,157,.7)}
+
+/* ============ LOADER ============ */
+#loader{position:fixed;inset:0;z-index:9998;background:#020806;display:grid;place-items:center;transition:opacity .6s,visibility .6s}
 #loader.hide{opacity:0;visibility:hidden}
 .load-box{text-align:center}
 .load-box img{width:110px;filter:drop-shadow(0 0 22px rgba(0,255,157,.9));animation:float 2.2s ease-in-out infinite}
@@ -75,30 +117,32 @@ header{position:sticky;top:0;z-index:900;backdrop-filter:blur(14px);background:r
 .btn-sm{padding:11px 18px;font-size:11px;width:100%}
 .btn .rp{position:absolute;border-radius:50%;background:rgba(255,255,255,.5);transform:scale(0);animation:ripple .6s ease-out;pointer-events:none}
 
+/* ============ HERO ============ */
 .hero{padding:70px 0 60px;text-align:center;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;top:-40%;left:50%;transform:translateX(-50%);width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(0,255,157,.14),transparent 62%);pointer-events:none}
 .badge-pill{display:inline-flex;align-items:center;gap:9px;padding:9px 20px;border-radius:99px;border:1px solid var(--line);background:rgba(0,255,157,.06);color:var(--g);font-family:'Orbitron';font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;margin-bottom:26px}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--g);box-shadow:0 0 10px var(--g);animation:blink 1.4s infinite}
 
-/* ========= BITCOIN-STYLE LOGO ========= */
-.hero-badge{position:relative;width:360px;height:360px;max-width:82vw;max-height:82vw;margin:0 auto 22px;display:grid;place-items:center}
+/* Bitcoin-style logo */
+.hero-badge{position:relative;width:300px;height:300px;max-width:78vw;max-height:78vw;margin:0 auto 14px;display:grid;place-items:center}
 .aura-ring{position:absolute;border-radius:50%;pointer-events:none}
 .aura-outer{inset:0;border:1px dashed rgba(0,255,157,.3);animation:spin 22s linear infinite}
-.aura-mid{inset:26px;border:1.5px solid rgba(0,255,157,.35);animation:spinRev 15s linear infinite}
-.aura-inner{inset:52px;border:2px dotted rgba(0,255,157,.5);animation:spin 9s linear infinite}
-.orbit-dot{position:absolute;top:50%;left:50%;width:11px;height:11px;border-radius:50%;background:var(--g);box-shadow:0 0 20px var(--g),0 0 40px var(--g);pointer-events:none;z-index:3}
+.aura-mid{inset:22px;border:1.5px solid rgba(0,255,157,.35);animation:spinRev 15s linear infinite}
+.aura-inner{inset:44px;border:2px dotted rgba(0,255,157,.5);animation:spin 9s linear infinite}
+.orbit-dot{position:absolute;top:50%;left:50%;width:10px;height:10px;border-radius:50%;background:var(--g);box-shadow:0 0 20px var(--g),0 0 40px var(--g);pointer-events:none;z-index:3}
 .d1{animation:orbit1 4.5s linear infinite}
-.d2{animation:orbit2 6.5s linear infinite;width:8px;height:8px;background:#7dffe0;box-shadow:0 0 16px #7dffe0,0 0 32px #7dffe0}
-.d3{animation:orbit3 8s linear infinite;width:6px;height:6px;background:#eafff5;box-shadow:0 0 14px #eafff5,0 0 28px #eafff5}
-.logo-core{position:relative;z-index:2;width:165px;height:165px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,rgba(0,255,157,.32),transparent 72%);border:2px solid rgba(0,255,157,.55);animation:auraPulse 2.6s ease-in-out infinite}
+.d2{animation:orbit2 6.5s linear infinite;width:7px;height:7px;background:#7dffe0;box-shadow:0 0 16px #7dffe0,0 0 32px #7dffe0}
+.d3{animation:orbit3 8s linear infinite;width:5px;height:5px;background:#eafff5;box-shadow:0 0 14px #eafff5,0 0 28px #eafff5}
+.logo-core{position:relative;z-index:2;width:145px;height:145px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,rgba(0,255,157,.32),transparent 72%);border:2px solid rgba(0,255,157,.55);animation:auraPulse 2.6s ease-in-out infinite}
 .logo-core::before{content:'';position:absolute;inset:-14px;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 20%,rgba(0,255,157,.85) 32%,transparent 42% 62%,rgba(0,255,157,.7) 75%,transparent 88% 100%);animation:spin 3.4s linear infinite;filter:blur(11px);z-index:-1}
 .logo-core::after{content:'';position:absolute;inset:-6px;border-radius:50%;background:conic-gradient(from 180deg,transparent 0 30%,rgba(0,255,157,.5) 50%,transparent 70%);animation:spinRev 5s linear infinite;filter:blur(5px);z-index:-1}
 .logo-core img{width:72%;height:72%;object-fit:contain;filter:drop-shadow(0 0 22px rgba(0,255,157,1)) drop-shadow(0 0 44px rgba(0,255,157,.6));animation:float 3.6s ease-in-out infinite}
 
-.hero h1{font-family:'Orbitron';font-weight:900;font-size:clamp(2rem,7.5vw,5rem);line-height:1.05;letter-spacing:.03em;background:linear-gradient(90deg,#0d5a3a,#00ff9d,#eafff5,#00ff9d,#0d5a3a);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 5s linear infinite;filter:drop-shadow(0 0 26px rgba(0,255,157,.45));margin-bottom:16px;text-transform:uppercase}
-.hero h2{font-family:'Share Tech Mono',monospace;font-weight:400;font-size:clamp(1rem,2.6vw,1.5rem);color:var(--g);letter-spacing:.14em;text-transform:uppercase;margin-bottom:18px;min-height:1.8em}
+/* ======== SMALLER BRAND TEXT ======== */
+.hero h1{font-family:'Orbitron';font-weight:900;font-size:clamp(0.95rem,2.4vw,1.5rem);line-height:1.2;letter-spacing:.4em;background:linear-gradient(90deg,#0d5a3a,#00ff9d,#eafff5,#00ff9d,#0d5a3a);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 5s linear infinite;filter:drop-shadow(0 0 16px rgba(0,255,157,.45));margin:0 0 12px;text-transform:uppercase;padding-left:.4em}
+.hero h2{font-family:'Share Tech Mono',monospace;font-weight:400;font-size:clamp(1rem,2.4vw,1.35rem);color:var(--g);letter-spacing:.14em;text-transform:uppercase;margin-bottom:18px;min-height:1.8em}
 .hero h2::after{content:'_';animation:blink 1s infinite;color:var(--g)}
-.hero p.lead{max-width:720px;margin:0 auto 32px;color:var(--mut);font-size:1.06rem}
+.hero p.lead{max-width:720px;margin:0 auto 32px;color:var(--mut);font-size:1.04rem}
 .hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:44px}
 .live-vis{display:inline-flex;align-items:center;gap:8px;font-family:'Orbitron';font-size:11px;letter-spacing:.16em;color:var(--mut);text-transform:uppercase;margin-bottom:14px}
 .live-vis i{width:8px;height:8px;border-radius:50%;background:#00ff9d;box-shadow:0 0 12px #00ff9d;animation:blink 1.6s infinite;font-style:normal}
@@ -131,46 +175,65 @@ section{padding:88px 0;position:relative}
 .feature h3{font-family:'Orbitron';font-size:15px;letter-spacing:.06em;margin-bottom:10px;color:var(--g);text-transform:uppercase}
 .feature p{color:var(--mut);font-size:.98rem}
 
-/* ========= GAME TABS ========= */
+/* ============ GAME TABS ============ */
 .game-tabs{display:flex;gap:12px;justify-content:center;margin-bottom:40px;flex-wrap:wrap}
 .game-tab{padding:14px 26px;border-radius:14px;background:rgba(0,255,157,.05);border:1px solid var(--line);color:var(--mut);font-family:'Orbitron';font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:.3s;display:inline-flex;align-items:center;gap:9px}
 .game-tab:hover{color:var(--g);border-color:rgba(0,255,157,.45);transform:translateY(-3px)}
 .game-tab.active{background:linear-gradient(135deg,rgba(0,255,157,.25),rgba(0,255,157,.08));color:var(--g);border-color:var(--g);box-shadow:0 0 26px rgba(0,255,157,.45);text-shadow:0 0 12px rgba(0,255,157,.6)}
 
-/* ========= PRODUCT CARDS ========= */
-.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:22px}
-.card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px 24px;backdrop-filter:blur(10px);transition:.35s;overflow:hidden;display:flex;flex-direction:column;animation:tin .35s ease}
+/* ============ PRODUCT CARDS ============ */
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:22px}
+.card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:26px 24px;backdrop-filter:blur(10px);transition:.35s;overflow:hidden;display:flex;flex-direction:column;animation:tin .35s ease}
 .card::before{content:'';position:absolute;inset:-1px;border-radius:21px;padding:1.5px;background:conic-gradient(from 0deg,transparent 0 62%,var(--g) 78%,transparent 92% 100%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:.4s;animation:spin 4s linear infinite;pointer-events:none}
 .card:hover::before{opacity:1}
 .card:hover{transform:translateY(-9px);box-shadow:0 22px 60px rgba(0,255,157,.18)}
 .card.hidden-card{border-color:rgba(255,215,0,.5);background:linear-gradient(135deg,rgba(20,10,0,.85),rgba(6,26,18,.72));box-shadow:0 0 40px rgba(255,215,0,.15)}
 .card.hidden-card::before{background:conic-gradient(from 0deg,transparent 0 62%,#ffd700 78%,transparent 92% 100%)}
 .card.hidden-card .chip{background:rgba(255,215,0,.15);color:#ffd700;border-color:rgba(255,215,0,.4)}
-.card.hidden-card .price b{color:#ffd700;text-shadow:0 0 18px rgba(255,215,0,.7)}
+.card.hidden-card .price-current{color:#ffd700;text-shadow:0 0 18px rgba(255,215,0,.7)}
 .card.hidden-card .card-logo{background:radial-gradient(circle,rgba(255,215,0,.2),transparent 72%);border-color:rgba(255,215,0,.35)}
 .card.hidden-card h3{color:#fff7cc;text-shadow:0 0 14px rgba(255,215,0,.4)}
-.card-top{display:flex;align-items:center;gap:14px;margin-bottom:16px}
-/* NO ANIMATION on card logo — hanya kedip saat hover */
-.card-logo{width:62px;height:62px;flex:0 0 62px;border-radius:16px;display:grid;place-items:center;background:radial-gradient(circle,rgba(0,255,157,.16),transparent 72%);border:1px solid var(--line);overflow:hidden}
+.card.hidden-card .tier-btn.active{background:linear-gradient(135deg,rgba(255,215,0,.3),rgba(255,215,0,.1));border-color:#ffd700;color:#ffd700;box-shadow:0 0 22px rgba(255,215,0,.5)}
+.card-top{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.card-logo{width:60px;height:60px;flex:0 0 60px;border-radius:16px;display:grid;place-items:center;background:radial-gradient(circle,rgba(0,255,157,.16),transparent 72%);border:1px solid var(--line);overflow:hidden}
 .card-logo img{width:74%;height:74%;object-fit:contain;filter:drop-shadow(0 0 12px rgba(0,255,157,.9))}
 .card:hover .card-logo img{animation:blink 1.1s ease-in-out infinite}
 .card.hidden-card:hover .card-logo img{animation:blink 1.1s ease-in-out infinite}
-.card h3{font-family:'Orbitron';font-size:15.5px;letter-spacing:.04em;color:#eafff5;text-transform:uppercase;line-height:1.3}
-.card .desc{color:var(--mut);font-size:.97rem;margin-bottom:18px;flex:1}
-.chip{display:inline-block;font-family:'Orbitron';font-size:9.5px;letter-spacing:.16em;padding:5px 12px;border-radius:99px;text-transform:uppercase;margin-bottom:14px;background:rgba(0,255,157,.12);color:var(--g);border:1px solid var(--line)}
+.card h3{font-family:'Orbitron';font-size:15px;letter-spacing:.04em;color:#eafff5;text-transform:uppercase;line-height:1.3}
+.card .desc{color:var(--mut);font-size:.95rem;margin-bottom:16px;line-height:1.55}
+.chip{display:inline-block;font-family:'Orbitron';font-size:9.5px;letter-spacing:.16em;padding:5px 12px;border-radius:99px;text-transform:uppercase;margin-bottom:12px;background:rgba(0,255,157,.12);color:var(--g);border:1px solid var(--line)}
 .chip.hot{background:rgba(255,170,0,.12);color:#ffb340;border-color:rgba(255,170,0,.3)}
 .chip.ltd{background:rgba(255,60,90,.12);color:#ff6b85;border-color:rgba(255,60,90,.3)}
 .chip.gold{background:rgba(255,215,0,.15);color:#ffd700;border-color:rgba(255,215,0,.4)}
-.price{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;flex-wrap:wrap}
-.price b{font-family:'Orbitron';font-size:1.45rem;color:var(--g);text-shadow:0 0 16px rgba(0,255,157,.55)}
-.price s{color:#5c7a6c;font-size:.95rem}
 
-.stock{margin-bottom:16px}
-.stock-head{display:flex;justify-content:space-between;font-size:11.5px;letter-spacing:.1em;color:var(--mut);text-transform:uppercase;margin-bottom:6px;font-family:'Orbitron'}
-.stock-head b{color:var(--g)}
-.stock-bar{height:5px;border-radius:99px;background:rgba(0,255,157,.1);overflow:hidden;position:relative}
-.stock-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--g3),var(--g));box-shadow:0 0 12px rgba(0,255,157,.7);border-radius:99px;transition:width 1.2s cubic-bezier(.2,.7,.3,1);width:0}
-.stock-bar.low i{background:linear-gradient(90deg,#a03b1e,#ff6b3d);box-shadow:0 0 12px rgba(255,107,61,.7)}
+/* FEATURES BLOCK */
+.features-block{margin-bottom:16px}
+.features-label{display:block;font-family:'Orbitron';font-size:10px;letter-spacing:.2em;color:var(--g);text-transform:uppercase;margin-bottom:9px}
+.features-list{display:flex;flex-wrap:wrap;gap:6px}
+.feat-pill{font-family:'Orbitron';font-size:9.5px;letter-spacing:.08em;padding:5px 10px;border-radius:8px;background:rgba(0,255,157,.07);border:1px solid var(--line);color:var(--txt);text-transform:uppercase;transition:.25s}
+.feat-pill:hover{background:rgba(0,255,157,.18);color:var(--g);border-color:rgba(0,255,157,.5);transform:translateY(-2px)}
+.card.hidden-card .feat-pill{background:rgba(255,215,0,.08);border-color:rgba(255,215,0,.25)}
+.card.hidden-card .feat-pill:hover{background:rgba(255,215,0,.2);color:#ffd700}
+
+/* DISCLAIMER */
+.disclaimer{margin:12px 0;padding:12px 14px;border-radius:12px;background:rgba(255,170,0,.08);border-left:3px solid #ffb340;font-size:.85rem;color:#ffcf80;line-height:1.5;font-style:italic}
+.card.hidden-card .disclaimer{background:rgba(255,215,0,.08);border-left-color:#ffd700;color:#fff0a6}
+
+/* TIER SELECTOR */
+.tier-block{margin-bottom:14px}
+.tier-label-title{display:block;font-family:'Orbitron';font-size:10px;letter-spacing:.2em;color:var(--g);text-transform:uppercase;margin-bottom:9px}
+.tier-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:8px}
+.tier-btn{padding:9px 6px;border-radius:10px;background:rgba(0,255,157,.05);border:1.5px solid var(--line);color:var(--mut);cursor:pointer;transition:.25s;font-family:'Orbitron';text-align:center;display:flex;flex-direction:column;gap:3px;align-items:center;justify-content:center;min-height:52px}
+.tier-btn:hover{border-color:rgba(0,255,157,.5);color:var(--g);transform:translateY(-2px)}
+.tier-btn.active{background:linear-gradient(135deg,rgba(0,255,157,.25),rgba(0,255,157,.06));border-color:var(--g);color:var(--g);box-shadow:0 0 20px rgba(0,255,157,.4);text-shadow:0 0 10px rgba(0,255,157,.6)}
+.tier-label{font-size:9.5px;font-weight:700;letter-spacing:.08em}
+.tier-price{font-size:8.5px;letter-spacing:.04em;opacity:.75;font-weight:500}
+.tier-btn.active .tier-price{opacity:1}
+
+/* PRICE DISPLAY */
+.price-display{display:flex;align-items:baseline;justify-content:center;gap:12px;margin:16px 0;padding:14px;border-radius:14px;background:linear-gradient(135deg,rgba(0,255,157,.08),transparent);border:1px solid var(--line)}
+.price-current{font-family:'Orbitron';font-size:1.75rem;font-weight:900;color:var(--g);text-shadow:0 0 20px rgba(0,255,157,.7);transition:.3s;letter-spacing:.02em}
+.price-current.bump{animation:startPulse .4s ease}
 
 .pay{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:44px}
 .pay span{font-family:'Orbitron';font-size:11px;letter-spacing:.16em;padding:11px 22px;border-radius:12px;border:1px solid var(--line);color:var(--g);background:rgba(0,255,157,.05);transition:.3s}
@@ -214,7 +277,6 @@ details p{margin-top:14px;color:var(--mut);font-size:.98rem}
 .cta-box h2{font-family:'Orbitron';font-weight:900;font-size:clamp(1.4rem,4vw,2.4rem);text-transform:uppercase;margin-bottom:16px;position:relative;z-index:1;background:linear-gradient(90deg,#0d5a3a,#00ff9d,#eafff5,#00ff9d,#0d5a3a);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 5s linear infinite}
 .cta-box p{color:var(--mut);max-width:600px;margin:0 auto 30px;position:relative;z-index:1}
 .cta-box .btn{position:relative;z-index:1}
-
 .copy-wa{display:flex;justify-content:center;gap:10px;margin-top:26px;flex-wrap:wrap}
 .copy-wa button{background:rgba(0,255,157,.07);border:1px solid var(--line);color:var(--g);padding:10px 18px;border-radius:10px;font-family:'Orbitron';font-size:11px;letter-spacing:.14em;cursor:pointer;transition:.3s;display:inline-flex;align-items:center;gap:8px}
 .copy-wa button:hover{background:rgba(0,255,157,.18);box-shadow:0 0 18px rgba(0,255,157,.35);transform:translateY(-2px)}
@@ -260,16 +322,54 @@ footer .social svg{width:20px;height:20px;fill:var(--g)}
   .burger{display:grid;place-items:center}
   section{padding:64px 0}
   .hero{padding:48px 0 40px}
-  .hero-badge{width:300px;height:300px}
-  .logo-core{width:140px;height:140px}
+  .hero-badge{width:260px;height:260px}
+  .logo-core{width:120px;height:120px}
+  .start-logo-wrap{width:220px;height:220px}
+  .start-logo{width:120px;height:120px}
+  .start-btn-inner{padding:18px 40px;font-size:1rem;letter-spacing:.22em}
+  .start-stats{gap:16px}
+  .start-stats b{font-size:1.1rem}
   #toast{left:14px;right:14px;bottom:150px;max-width:100%}
   #matrixToggle{left:14px;bottom:14px;padding:10px 14px;font-size:9.5px}
   #backTop{right:14px;bottom:88px;width:50px;height:50px}
   .float-wa{right:14px;bottom:14px;width:54px;height:54px}
+  .tier-list{grid-template-columns:repeat(2,1fr)}
 }
 </style>
 </head>
-<body>
+<body class="locked">
+
+<!-- ============ START SCREEN ============ -->
+<div id="startScreen">
+  <div class="start-content">
+    <div class="start-logo-wrap">
+      <span class="start-ring r1"></span>
+      <span class="start-ring r2"></span>
+      <span class="start-ring r3"></span>
+      <span class="start-dot"></span>
+      <span class="start-dot d2"></span>
+      <div class="start-logo">
+        <img src="moxxagtg.png" alt="MOXXA">
+      </div>
+    </div>
+    <h1 class="start-title">MOXXASTEALTHGRADE</h1>
+    <p class="start-sub">Stealth • Premium • Grade</p>
+    <p class="start-hint">⚠️ Tekan tombol di bawah untuk masuk ke market</p>
+    <button class="start-btn" id="startBtn">
+      <span class="start-btn-inner">
+        <span class="start-arrow">▶</span>
+        <span>STARTED</span>
+      </span>
+    </button>
+    <div class="start-stats">
+      <div><b>1000+</b>Transaksi</div>
+      <div><b>24/7</b>Fast Respon</div>
+      <div><b>100%</b>Garansi</div>
+    </div>
+  </div>
+  <div class="start-footer">// INITIALIZING SECURE CHANNEL …</div>
+</div>
+<div class="start-flash" id="startFlash"></div>
 
 <div id="scrollProg"></div>
 <div id="cursor"></div>
@@ -328,7 +428,7 @@ footer .social svg{width:20px;height:20px;fill:var(--g)}
     <h1>MOXXASTEALTHGRADE</h1>
     <h2 id="typing">&nbsp;</h2>
 
-    <p class="lead">Market cheat premium, anti-deteksi, dan bergaransi untuk Free Fire, PUBG Mobile, dan Mobile Legends. Bukan untuk yang cari murahan — hanya untuk yang tahu kualitas.</p>
+    <p class="lead">Market cheat premium anti-deteksi untuk Free Fire, PUBG Mobile, dan Mobile Legends. Produk exclusive, stok terbatas, dan hanya beredar di kalangan terpilih. Bukan untuk yang cari murahan — tapi untuk yang tahu kualitas.</p>
 
     <div class="hero-cta">
       <a href="#katalog" class="btn btn-primary">Lihat Katalog</a>
@@ -346,9 +446,9 @@ footer .social svg{width:20px;height:20px;fill:var(--g)}
 
 <div class="marquee">
   <div>
-    <span>◆ Free Fire</span><span>◆ PUBG Mobile</span><span>◆ Mobile Legends</span>
+    <span>◆ Free Fire Internal</span><span>◆ Free Fire Hidden Panel</span><span>◆ PUBG Mobile</span><span>◆ Mobile Legends</span>
     <span>◆ Anti-Deteksi</span><span>◆ Garansi Penuh</span><span>◆ Private Build</span>
-    <span>◆ Free Fire</span><span>◆ PUBG Mobile</span><span>◆ Mobile Legends</span>
+    <span>◆ Free Fire Internal</span><span>◆ Free Fire Hidden Panel</span><span>◆ PUBG Mobile</span><span>◆ Mobile Legends</span>
     <span>◆ Anti-Deteksi</span><span>◆ Garansi Penuh</span><span>◆ Private Build</span>
   </div>
 </div>
@@ -389,8 +489,8 @@ footer .social svg{width:20px;height:20px;fill:var(--g)}
   <div class="wrap">
     <div class="reveal center">
       <span class="sec-tag">// Katalog</span>
-      <h2 class="sec-title">Pilih Game &amp; Barangmu</h2>
-      <p class="sec-desc">Pilih kategori game di bawah, lalu pilih produk yang kamu mau.</p>
+      <h2 class="sec-title">Pilih Game &amp; Paketmu</h2>
+      <p class="sec-desc">Pilih kategori game, lalu pilih durasi paket yang kamu mau. Harga otomatis berubah.</p>
     </div>
 
     <div class="game-tabs">
@@ -415,7 +515,7 @@ footer .social svg{width:20px;height:20px;fill:var(--g)}
       <p class="sec-desc">Gak pake ribet. Dari chat sampai barang diterima, hitungannya menit.</p>
     </div>
     <div class="steps">
-      <div class="step reveal"><b>01</b><h3>Chat Via WhatsApp</h3><p>Klik tombol order, langsung masuk ke WA kami. Sebutin game &amp; produk yang kamu mau.</p></div>
+      <div class="step reveal"><b>01</b><h3>Pilih Paket &amp; Chat</h3><p>Pilih game, pilih durasi, klik order. Langsung masuk WA kami dengan detail pesanan otomatis.</p></div>
       <div class="step reveal"><b>02</b><h3>Bayar &amp; Konfirmasi</h3><p>Transfer via DANA / OVO / GoPay / QRIS. Kirim bukti, langsung diproses.</p></div>
       <div class="step reveal"><b>03</b><h3>Terima &amp; Main</h3><p>Barang dikirim lengkap plus panduan. Ada kendala? Tinggal chat, kami bantu.</p></div>
     </div>
@@ -505,25 +605,68 @@ const WA_NUMBER = "6281234567890";
 const DISCORD_URL = "#";
 const TELEGRAM_URL = "#";
 
-/* ============ PRODUK PER GAME ============ */
+const GAME_LABEL = { ff:"Free Fire", pubg:"PUBG Mobile", ml:"Mobile Legends" };
+
+/* ============ PRODUK DENGAN TIER ============ */
 const PRODUCTS = [
-  /* -------- FREE FIRE -------- */
-  { game:"ff", name:"HIDDEN CHEAT", desc:"Ini adalah cheat paling susah untuk di deteksi. Bahkan anticheat tingkat kernel pun susah buat mendeteksi cheat ini.", price:"Rp 2.150.000", old:"", chip:"ULTRA RARE", cls:"gold", stock:2, max:5, featured:true },
-  { game:"ff", name:"CHEAT VIP ULTIMATE", desc:"Semua fitur unlocked. Hanya untuk yang serius. Slot terbatas tiap bulannya.", price:"Rp 120.000", old:"Rp 250.000", chip:"Slot Terbatas", cls:"hot", stock:24, max:50 },
-  { game:"ff", name:"AIM ASSIST PRO", desc:"Auto headshot, smooth, anti-lag. Settingan bisa diatur sesuai selera main kamu.", price:"Rp 55.000", old:"Rp 110.000", chip:"Ready Stock", cls:"", stock:73, max:100 },
-  { game:"ff", name:"ANTI-BANNED PACK", desc:"Full proteksi + bypass terbaru. Buat kamu yang main di akun sayang buat kena banned.", price:"Rp 85.000", old:"Rp 170.000", chip:"Ready Stock", cls:"", stock:41, max:100 },
-  { game:"ff", name:"PRIVATE CHEAT", desc:"Slot terbatas — cuma 10 user per bulan. Private build, gak dijual bebas di mana pun.", price:"Rp 200.000", old:"Rp 400.000", chip:"Sisa 3 Slot", cls:"ltd", stock:3, max:10 },
-  { game:"ff", name:"CHEAT PREMIUM A", desc:"Fitur lengkap, cocok buat yang mau main di level atas. Stabil dan ringan di HP kentang.", price:"Rp 45.000", old:"Rp 90.000", chip:"Ready Stock", cls:"", stock:87, max:100 },
+  /* ======= FREE FIRE ======= */
+  {
+    game: "ff",
+    name: "FREE FIRE INTERNAL",
+    desc: "Cheat Free Fire versi internal dengan injeksi langsung. Fitur lengkap, stabil, dan cocok buat push rank maupun main santai. Support semua versi FF terbaru.",
+    chip: "BEST SELLER",
+    cls: "hot",
+    features: ["SPEED HACK","AUTO TELEPORT","NO RELOAD","AIM MAGNET","GHOST HACK","AIMKILL","GATLING KILL ALL","FAST RELOAD","AIMBOT","DLL"],
+    tiers: [
+      { label: "1 DAY",  price: 15000 },
+      { label: "3 DAY",  price: 30000 },
+      { label: "7 DAY",  price: 50000 },
+      { label: "30 DAY", price: 100000 }
+    ]
+  },
+  {
+    game: "ff",
+    name: "FREE FIRE HIDDEN PANEL",
+    desc: "Cheat Free Fire kelas premium dengan sistem panel tersembunyi. Fitur sengaja dibatasi agar tetap stealth — hanya untuk yang tahu kualitas.",
+    chip: "ULTRA RARE",
+    cls: "gold",
+    featured: true,
+    features: ["AIMBOT","AIMNECK","ESP"],
+    tiers: [
+      { label: "LIFETIME", price: 2350000 }
+    ],
+    disclaimer: "Kenapa fiturnya sedikit? Karena ini panel khusus laga dan udah bisa dibilang susah untuk di deteksi — bahkan anticheat pun susah mendeteksi nya."
+  },
 
-  /* -------- PUBG MOBILE -------- */
-  { game:"pubg", name:"PUBG PREMIUM", desc:"Cheat PUBG Mobile dengan fitur aimbot, ESP, dan no recoil. Stabil dan anti-deteksi.", price:"Rp 65.000", old:"Rp 130.000", chip:"Ready Stock", cls:"", stock:52, max:100 },
-  { game:"pubg", name:"PUBG AIM LOCK", desc:"Auto lock headshot PUBG, smooth dan aman. Cocok buat push rank.", price:"Rp 85.000", old:"Rp 170.000", chip:"Ready Stock", cls:"", stock:38, max:100 },
-  { game:"pubg", name:"PUBG ANTI-BAN PRO", desc:"Full bypass anticheat PUBG. Terupdate mengikuti patch terbaru.", price:"Rp 95.000", old:"Rp 190.000", chip:"Slot Terbatas", cls:"hot", stock:21, max:50 },
+  /* ======= PUBG MOBILE ======= */
+  {
+    game: "pubg",
+    name: "PUBG MOBILE CHEAT",
+    desc: "Cheat PUBG Mobile dengan aimbot presisi tinggi dan ESP lengkap. Anti-recoil, anti-lag, dan sudah lolos testing ribuan match.",
+    chip: "RECOMMENDED",
+    cls: "hot",
+    features: ["AIMBOT","ESP","SPEED HACK","WALLHACK","NO RECOIL","NO RELOAD"],
+    tiers: [
+      { label: "1 DAY", price: 50000 },
+      { label: "3 DAY", price: 100000 },
+      { label: "7 DAY", price: 230000 }
+    ]
+  },
 
-  /* -------- MOBILE LEGENDS -------- */
-  { game:"ml", name:"ML MAP HACK", desc:"Buka semua map ML, lihat posisi musuh di minimap. Fitur lengkap dan aman.", price:"Rp 45.000", old:"Rp 90.000", chip:"Ready Stock", cls:"", stock:68, max:100 },
-  { game:"ml", name:"ML AUTO COMBO", desc:"Auto combo hero ML, skill otomatis aktif. Cocok buat yang mau push rank cepat.", price:"Rp 55.000", old:"Rp 110.000", chip:"Ready Stock", cls:"", stock:61, max:100 },
-  { game:"ml", name:"ML VIP PACK", desc:"Semua fitur ML unlocked — map hack, auto combo, aim assist. Slot terbatas.", price:"Rp 130.000", old:"Rp 260.000", chip:"Slot Terbatas", cls:"hot", stock:17, max:50 }
+  /* ======= MOBILE LEGENDS ======= */
+  {
+    game: "ml",
+    name: "MOBILE LEGENDS CHEAT",
+    desc: "Cheat ML dengan map hack yang bikin kamu selalu tahu posisi musuh. Auto skill, auto retri, dan critical damage sudah terpasang otomatis.",
+    chip: "READY STOCK",
+    cls: "",
+    features: ["MAP HACK","WALL HACK","AUTO RETRI","AUTO HOOK","AUTO LOCK","CRITICAL DAMAGE"],
+    tiers: [
+      { label: "1 DAY", price: 25000 },
+      { label: "3 DAY", price: 75000 },
+      { label: "7 DAY", price: 150000 }
+    ]
+  }
 ];
 
 const REVIEWS = [
@@ -536,28 +679,28 @@ const REVIEWS = [
 ];
 
 const FAQS = [
-  { q:"Gimana cara ordernya?", a:"Gampang banget. Pilih game dulu, klik tombol ORDER SEKARANG di produk yang kamu mau, nanti langsung masuk ke WhatsApp kami dengan pesan otomatis. Tinggal sebutin produk, kami kasih total harga + nomor pembayaran. Setelah bayar dan kirim bukti, barang langsung dikirim." },
-  { q:"Ada garansi gak?", a:"Ada. Semua produk kami bergaransi penuh. Kalau ada error, gak jalan, atau update-nya ketinggalan, tinggal chat kami — bakal dibantu sampai tuntas. Gak ada istilah dilepas setelah bayar." },
-  { q:"Bayarnya bisa pakai apa aja?", a:"Kami terima DANA, OVO, GoPay, ShopeePay, dan QRIS. Semua metode pembayaran yang umum di Indonesia bisa dipakai. Kalau bingung, tinggal tanya aja di WA." },
-  { q:"Aman gak? Takut kena banned.", a:"Produk kami pakai teknologi anti-deteksi terbaru dan selalu di-update mengikuti patch game. Selama kamu pakai sesuai panduan yang kami kasih, risikonya sangat kecil. Ribuan user kami main aman sampai sekarang." },
-  { q:"HIDDEN CHEAT itu apa?", a:"HIDDEN CHEAT adalah produk paling premium kami. Cheat ini pakai teknik obfuscation tingkat lanjut sehingga bahkan anticheat tingkat kernel pun susah mendeteksinya. Slot sangat terbatas — biasanya cuma 5 user per bulan." },
-  { q:"Kenapa harganya lebih mahal?", a:"Karena yang kamu bayar bukan cuma file — tapi kualitas, keamanan, dan support. Produk kami exclusive, gak beredar bebas, dan di-testing dulu sebelum dijual. Yang cari murahan silakan cari di tempat lain. Yang cari aman, ya di sini." },
-  { q:"Kalau WA saya kena blokir gimana?", a:"Tenang. Kami punya jalur backup. Kalau WA kamu kena blokir, tinggal chat kami pakai nomor lain atau minta link Telegram. Nomor WA kami juga tertera jelas di footer, jadi gak bakal ilang." }
+  { q:"Gimana cara ordernya?", a:"Pilih game di katalog, klik durasi yang kamu mau (1D/3D/7D/30D/Lifetime), lalu klik tombol ORDER SEKARANG. Otomatis masuk ke WhatsApp kami dengan detail pesanan lengkap. Tinggal bayar dan konfirmasi, barang langsung dikirim." },
+  { q:"Ada garansi gak?", a:"Ada. Semua produk kami bergaransi penuh. Kalau ada error, gak jalan, atau update-nya ketinggalan, tinggal chat kami — bakal dibantu sampai tuntas." },
+  { q:"Bayarnya bisa pakai apa aja?", a:"DANA, OVO, GoPay, ShopeePay, dan QRIS. Semua metode pembayaran umum di Indonesia bisa dipakai." },
+  { q:"Aman gak? Takut kena banned.", a:"Produk kami pakai teknologi anti-deteksi terbaru dan selalu di-update mengikuti patch game. Selama dipakai sesuai panduan, risikonya sangat kecil. Ribuan user kami main aman sampai sekarang." },
+  { q:"HIDDEN PANEL itu apa? Kenapa mahal?", a:"HIDDEN PANEL adalah produk paling premium kami. Cheat ini pakai teknik obfuscation tingkat lanjut sehingga bahkan anticheat tingkat kernel pun susah mendeteksinya. Fiturnya sengaja dibatasi agar tetap stealth. Slot sangat terbatas — biasanya cuma 5 user per bulan." },
+  { q:"Beda FREE FIRE INTERNAL sama HIDDEN PANEL?", a:"INTERNAL punya banyak fitur dengan harga terjangkau, cocok buat yang mau push rank. HIDDEN PANEL fokus pada stealth level tinggi — fitur lebih sedikit tapi deteksinya jauh lebih sulit." },
+  { q:"Kalau WA saya kena blokir gimana?", a:"Tenang. Kami punya jalur backup. Kalau WA kamu kena blokir, tinggal chat kami pakai nomor lain atau minta link Telegram. Nomor WA kami juga tertera jelas di footer." }
 ];
 
 const TYPING_PHRASES = [
   "CHEAT INI SUSAH UNTUK DI TEMUKAN",
   "FREE FIRE • PUBG • MOBILE LEGENDS",
-  "ANTI-DETEKSI • 100% AMAN",
-  "PREMIUM QUALITY • GARANSI PENUH"
+  "HARGA TERJANGKAU • KUALITAS PREMIUM",
+  "ANTI-DETEKSI • GARANSI PENUH"
 ];
 
 const FAKE_NAMES = ["Andi","Rizky","Bagas","Fajar","Dika","Yoga","Reza","Bima","Dimas","Arif","Gilang","Hendra","Ilham","Joko","Kevin"];
 const FAKE_CITIES = ["Jakarta","Bandung","Surabaya","Medan","Makassar","Semarang","Yogyakarta","Bekasi","Tangerang","Depok"];
-const GAME_LABEL = { ff:"Free Fire", pubg:"PUBG Mobile", ml:"Mobile Legends" };
 
 /* ============ HELPERS ============ */
 function waLink(msg){ return "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(msg); }
+function formatRp(n){ return "Rp " + n.toLocaleString('id-ID'); }
 function showToast(title, msg){
   const box = document.getElementById("toast");
   const el = document.createElement("div");
@@ -577,40 +720,62 @@ document.getElementById("footWa").textContent =
 document.getElementById("discordBtn").href = DISCORD_URL;
 document.getElementById("telegramBtn").href = TELEGRAM_URL;
 
-/* ============ RENDER KATALOG PER GAME ============ */
+/* ============ RENDER KATALOG ============ */
 const catalogEl = document.getElementById("catalog");
 function renderCatalog(game){
   const list = PRODUCTS.filter(p => p.game === game);
   catalogEl.innerHTML = list.map(p => {
-    const pct = Math.round((p.stock / p.max) * 100);
-    const low = pct < 40 ? "low" : "";
     const hidden = p.featured ? "hidden-card" : "";
-    const oldPrice = p.old ? `<s>${p.old}</s>` : "";
+    const features = p.features.map(f => `<span class="feat-pill">${f}</span>`).join("");
+    const tiers = p.tiers.map((t, i) => `
+      <button class="tier-btn ${i === 0 ? 'active' : ''}" data-price="${t.price}" data-label="${t.label}">
+        <span class="tier-label">${t.label}</span>
+        <span class="tier-price">${formatRp(t.price)}</span>
+      </button>
+    `).join("");
+    const disclaimer = p.disclaimer ? `<div class="disclaimer">⚠️ ${p.disclaimer}</div>` : "";
+    const defaultPrice = formatRp(p.tiers[0].price);
     return `
     <article class="card ${hidden}">
       <div class="card-top">
         <div class="card-logo"><img src="moxxagtg.png" alt="${p.name}"></div>
-        <h3>${p.name}</h3>
+        <div>
+          <h3>${p.name}</h3>
+          <span class="chip ${p.cls}" style="margin-top:6px;margin-bottom:0">${p.chip}</span>
+        </div>
       </div>
-      <span class="chip ${p.cls}">${p.chip}</span>
       <p class="desc">${p.desc}</p>
-      <div class="stock">
-        <div class="stock-head"><span>Stok Tersisa</span><span><b>${p.stock}</b> / ${p.max}</span></div>
-        <div class="stock-bar ${low}"><i data-pct="${pct}"></i></div>
+      <div class="features-block">
+        <span class="features-label">⚡ FITUR</span>
+        <div class="features-list">${features}</div>
       </div>
-      <div class="price"><b>${p.price}</b>${oldPrice}</div>
+      ${disclaimer}
+      <div class="tier-block">
+        <span class="tier-label-title">Pilih Durasi</span>
+        <div class="tier-list">${tiers}</div>
+      </div>
+      <div class="price-display">
+        <span class="price-current">${defaultPrice}</span>
+      </div>
       <button class="btn btn-primary btn-sm order-btn" data-produk="${p.name}" data-game="${GAME_LABEL[p.game]}">Order Sekarang</button>
     </article>`;
   }).join("");
-
-  /* animate stock bar */
-  requestAnimationFrame(()=>{
-    catalogEl.querySelectorAll(".stock-bar i").forEach(b => {
-      setTimeout(()=>{ b.style.width = b.dataset.pct + "%"; }, 80);
-    });
-  });
 }
 renderCatalog("ff");
+
+/* ============ TIER SELECTOR ============ */
+catalogEl.addEventListener("click", e => {
+  const tb = e.target.closest(".tier-btn");
+  if(!tb) return;
+  const card = tb.closest(".card");
+  card.querySelectorAll(".tier-btn").forEach(b => b.classList.remove("active"));
+  tb.classList.add("active");
+  const priceEl = card.querySelector(".price-current");
+  priceEl.textContent = formatRp(parseInt(tb.dataset.price));
+  priceEl.classList.remove("bump");
+  void priceEl.offsetWidth;
+  priceEl.classList.add("bump");
+});
 
 /* ============ GAME TABS ============ */
 document.querySelectorAll(".game-tab").forEach(tab => {
@@ -645,11 +810,15 @@ document.getElementById("faqList").innerHTML = FAQS.map((f,i) => `
 document.addEventListener("click", e => {
   const btn = e.target.closest(".order-btn");
   if(!btn) return;
+  const card = btn.closest(".card");
+  const tierBtn = card.querySelector(".tier-btn.active");
+  const tier = tierBtn ? tierBtn.dataset.label : "-";
+  const price = tierBtn ? tierBtn.dataset.price : "0";
   const produk = btn.dataset.produk;
   const game = btn.dataset.game;
-  showToast("Mengarahkan ke WhatsApp…", `${game} — ${produk}`);
+  showToast("Mengarahkan ke WhatsApp…", `${game} — ${produk} (${tier})`);
   setTimeout(()=>{
-    window.open(waLink(`Halo MOXXASTEALTHGRADE, saya mau order:\n\n🎮 Game: *${game}*\n📦 Produk: *${produk}*\n\nMasih ready?`), "_blank");
+    window.open(waLink(`Halo MOXXASTEALTHGRADE, saya mau order:\n\n🎮 Game: *${game}*\n📦 Produk: *${produk}*\n⏱️ Durasi: *${tier}*\n💰 Harga: *${formatRp(parseInt(price))}*\n\nMasih ready?`), "_blank");
   }, 550);
 });
 
@@ -747,7 +916,7 @@ document.getElementById("matrixToggle").onclick = function(){
   let cx = innerWidth/2, cy = innerHeight/2, tx = cx, ty = cy;
   document.addEventListener("mousemove", e => { tx = e.clientX; ty = e.clientY; });
   document.addEventListener("mouseover", e => {
-    const hot = e.target.closest("a,button,.card,.feature,.stat,summary,details,.game-tab");
+    const hot = e.target.closest("a,button,.card,.feature,.stat,summary,details,.game-tab,.tier-btn");
     cur.classList.toggle("hover", !!hot);
   });
   (function loop(){
@@ -821,10 +990,11 @@ document.getElementById("matrixToggle").onclick = function(){
     const name = FAKE_NAMES[Math.floor(Math.random()*FAKE_NAMES.length)];
     const city = FAKE_CITIES[Math.floor(Math.random()*FAKE_CITIES.length)];
     const p = PRODUCTS[Math.floor(Math.random()*PRODUCTS.length)];
-    showToast(`🟢 ${name.charAt(0)}** dari ${city}`, `baru order ${p.name}`);
+    const t = p.tiers[Math.floor(Math.random()*p.tiers.length)];
+    showToast(`🟢 ${name.charAt(0)}** dari ${city}`, `baru order ${p.name} (${t.label})`);
     setTimeout(spawn, 18000 + Math.random() * 22000);
   }
-  setTimeout(spawn, 9000);
+  setTimeout(spawn, 12000);
 })();
 
 /* ============ SCROLL UI ============ */
@@ -869,21 +1039,51 @@ document.addEventListener("keydown", e => {
   }
 });
 
-/* ============ PRELOADER ============ */
+/* ============ START SCREEN ============ */
 (function(){
+  const startBtn = document.getElementById("startBtn");
+  const screen = document.getElementById("startScreen");
+  const flash = document.getElementById("startFlash");
+  const loader = document.getElementById("loader");
+
+  /* Preloader runs behind start screen */
   const fill = document.getElementById("loadFill");
   let p = 0;
   const t = setInterval(()=>{
     p += Math.random()*16 + 6;
-    if(p >= 100){
-      p = 100; clearInterval(t);
-      setTimeout(()=>{
-        document.getElementById("loader").classList.add("hide");
-        showToast("Sistem Online", "Selamat datang di MOXXASTEALTHGRADE.");
-      }, 350);
-    }
+    if(p >= 100){ p = 100; clearInterval(t); }
     fill.style.width = p + "%";
   }, 170);
+
+  startBtn.onclick = () => {
+    /* Beep sound */
+    try{
+      const A = new (window.AudioContext || window.webkitAudioContext)();
+      const o = A.createOscillator(), g = A.createGain();
+      o.type = "sine"; o.frequency.setValueAtTime(660, A.currentTime);
+      o.frequency.exponentialRampToValueAtTime(1320, A.currentTime + .18);
+      g.gain.setValueAtTime(.12, A.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001, A.currentTime + .35);
+      o.connect(g).connect(A.destination);
+      o.start(); o.stop(A.currentTime + .35);
+    }catch(e){}
+
+    /* Flash effect */
+    flash.classList.add("go");
+    setTimeout(()=>{ flash.classList.remove("go"); }, 900);
+
+    /* Fade out start screen */
+    setTimeout(()=>{
+      screen.classList.add("hide");
+      document.body.classList.remove("locked");
+      /* Hide loader juga */
+      loader.classList.add("hide");
+      /* Greet */
+      setTimeout(()=>{
+        showToast("Selamat Datang ✓", "Sistem siap. Gaskeun cari cheat nya!");
+      }, 700);
+    }, 260);
+  };
 })();
 
 document.getElementById("year").textContent = new Date().getFullYear();
